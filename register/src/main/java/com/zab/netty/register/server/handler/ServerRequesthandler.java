@@ -2,6 +2,7 @@ package com.zab.netty.register.server.handler;
 
 import com.zab.netty.common.protocol.RpcRequest;
 import com.zab.netty.common.protocol.RpcResponse;
+import com.zab.netty.common.utils.StrUtil;
 import com.zab.netty.register.boot.ServerRegisterBoot;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -44,6 +45,7 @@ public class ServerRequesthandler extends SimpleChannelInboundHandler<RpcRequest
 
             try {
                 Object res = handleRequest(msg);
+                response.setResult(res);
             } catch (Exception e) {
                 e.printStackTrace();
                 response.setException(e);
@@ -59,7 +61,7 @@ public class ServerRequesthandler extends SimpleChannelInboundHandler<RpcRequest
         String methodName = request.getMethodName();
         Class<?>[] parameterTypes = request.getParameterTypes();
         Object[] parameters = request.getParameters();
-        Object obj = ServerRegisterBoot.imClassMap.get(className);
+        Object obj = ServerRegisterBoot.imClassMap.get(StrUtil.decapitalize(className));
         Class<?> clazz = obj.getClass();
         Method method = clazz.getMethod(methodName, parameterTypes);
         return method.invoke(obj, parameters);

@@ -1,6 +1,7 @@
 package com.zab.netty.register.boot;
 
 import com.zab.netty.common.config.RpcProperties;
+import com.zab.netty.common.utils.StrUtil;
 import com.zab.netty.common.utils.ZkUtil;
 import com.zab.netty.register.annotation.NService;
 import com.zab.netty.register.server.RpcServer;
@@ -51,10 +52,13 @@ public class ServerRegisterBoot implements ApplicationContextAware {
 
         Map<String, Object> serviceMap = applicationContext.getBeansWithAnnotation(NService.class);
         serviceMap.values().forEach(service -> {
-            String className = service.getClass().getAnnotation(NService.class).value();
+            NService nService = service.getClass().getAnnotation(NService.class);
+            String className = nService.value();
             if (StringUtils.isEmpty(className)) {
-                className = service.getClass().getName();
+                className = service.getClass().getGenericInterfaces()[0].getTypeName();
             }
+            className = className.substring(className.lastIndexOf(46) + 1);
+            className = StrUtil.decapitalize(className);
             imClassMap.put(className, service);
         });
 
@@ -72,4 +76,5 @@ public class ServerRegisterBoot implements ApplicationContextAware {
         }
 
     }
+
 }

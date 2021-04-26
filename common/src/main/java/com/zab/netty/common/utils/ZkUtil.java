@@ -105,7 +105,7 @@ public class ZkUtil {
             // 创建子节点
             if (event.getType().equals(PathChildrenCacheEvent.Type.CHILD_ADDED)) {
                 String path = event.getData().getPath();
-                String host = path.substring(path.lastIndexOf("/" + 1));
+                String host = path.substring(path.lastIndexOf("/") + 1);
                 log.info("服务器上线:{}", path);
 
                 updateProviderLock.lock();

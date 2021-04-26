@@ -9,6 +9,7 @@ import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Proxy;
@@ -32,6 +33,13 @@ public class RpcInjection implements ImportBeanDefinitionRegistrar {
     public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
         Map<String, Object> attributes = metadata.getAnnotationAttributes(EnableNettyRpc.class.getName());
         String[] provider = (String[]) attributes.get("provider");
+        if (null == provider || provider.length == 0) {
+            StandardAnnotationMetadata standardAnnotationMetadata = (StandardAnnotationMetadata) metadata;
+            Class<?> clazz = standardAnnotationMetadata.getIntrospectedClass();
+            String clazzName = clazz.getName();
+            String packageStr = clazzName.substring(0, clazzName.lastIndexOf(46));
+            provider = new String[]{packageStr};
+        }
 
         Reflections reflections = new Reflections(provider);
         // honorInherited-不包含子类

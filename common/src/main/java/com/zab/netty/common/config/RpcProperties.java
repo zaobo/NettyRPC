@@ -33,7 +33,7 @@ public class RpcProperties {
     /**
      * 服务注册中心地址
      */
-    @Value("${netty.rpc.register.address:127.0.0.0.1:2181}")
+    @Value("${netty.rpc.register.address:127.0.0.1:2181}")
     private String registerAddress;
 
     /**
