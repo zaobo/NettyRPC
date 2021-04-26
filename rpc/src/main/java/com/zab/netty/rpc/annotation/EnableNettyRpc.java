@@ -1,6 +1,7 @@
 package com.zab.netty.rpc.annotation;
 
 import com.zab.netty.rpc.boot.RpcBoot;
+import com.zab.netty.rpc.boot.RpcInjection;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.ElementType;
@@ -18,6 +19,7 @@ import java.lang.annotation.Target;
  **/
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import({RpcBoot.class})
+@Import({RpcBoot.class, RpcInjection.class})
 public @interface EnableNettyRpc {
+    String[] provider() default {};
 }

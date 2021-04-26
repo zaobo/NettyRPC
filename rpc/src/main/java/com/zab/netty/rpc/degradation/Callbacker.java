@@ -45,9 +45,9 @@ public class Callbacker {
             Method setThrowable = callBack.getMethod("setThrowable", Throwable.class);
             setThrowable.invoke(obj, e);
             return method.invoke(obj, rpcRequest.getParameters());
-        } else {
-            return null;
         }
+        return null;
+
     }
 
     public Callbacker ifNotCallBack(Process process) {

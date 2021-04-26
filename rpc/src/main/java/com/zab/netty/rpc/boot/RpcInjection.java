@@ -1,13 +1,17 @@
 package com.zab.netty.rpc.boot;
 
+import com.zab.netty.common.utils.RpcCacheHolder;
 import com.zab.netty.rpc.annotation.EnableNettyRpc;
 import com.zab.netty.rpc.annotation.NettyRpc;
+import com.zab.netty.rpc.proxy.RpcInvoker;
 import org.reflections.Reflections;
+import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,6 +39,11 @@ public class RpcInjection implements ImportBeanDefinitionRegistrar {
         rpcClass.forEach(clazz -> {
             NettyRpc rpc = clazz.getAnnotation(NettyRpc.class);
             String serverName = StringUtils.isEmpty(rpc.name()) ? rpc.name() : rpc.name();
+            RpcInvoker rpcInvoker = new RpcInvoker(serverName);
+            Object proxyInstance = Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, rpcInvoker);
+            SingletonBeanRegistry singletonBeanRegistry = (SingletonBeanRegistry) registry;
+            singletonBeanRegistry.registerSingleton(clazz.getName(), proxyInstance);
+            RpcCacheHolder.SUBSCRIBE_SERVICE.add(serverName);
         });
     }
 }
